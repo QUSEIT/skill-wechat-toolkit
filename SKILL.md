@@ -1,41 +1,66 @@
 ---
 name: wechat-toolkit
-description: "微信公众号一站式工具包 — 集成文章搜索、文章下载、AI洗稿改写、公众号发布四大功能。当用户需要搜索/下载/改写/发布微信公众号文章时使用。"
+description: "微信公众号工具包 — 集成文章搜索、下载、洗稿改写、发布四大功能。当用户需要搜索/下载/改写/发布微信公众号文章时使用。"
+category: social-media
 metadata:
-  {
-    "openclaw":
-      {
-        "emoji": "📦",
-        "requires": { "bins": ["node"] },
-        "platforms": ["macos", "linux", "windows"],
-        "install":
-          [
-            {
-              "id": "node-brew",
-              "kind": "brew",
-              "formula": "node",
-              "bins": ["node"],
-              "label": "Install Node.js (brew)",
-            },
-          ],
-      },
-  }
+  installed: true
+  server_ip: "171.37.44.131"
+  credential_location: "/config/.hermes/home/.config/wenyan-md/credential.json"
+  wenyan_version: "2.0.8"
+  server_ip_history:
+    - "171.36.17.27"  # original, now stale
+    - "171.37.44.131" # current (2026-05-25)
 ---
 
 # 📦 微信公众号工具包 (wechat-toolkit)
 
 集成四大功能模块：**搜索 → 下载 → 洗稿 → 发布**，覆盖公众号内容创作全流程。
 
+> **适配说明**：本技能从 OpenClaw 移植到 Hermes Agent。主要变更：
+> - `{baseDir}` → `/config/.hermes/skills/social-media/wechat-toolkit/`
+> - `wenyan-cli` 是 npm 全局包（非 OpenClaw 专用），已验证可用（v2.0.8）
+> - 下载模块需 `puppeteer-core` + Chromium（已验证 `/usr/bin/chromium`）
+> - 凭证存储在 `/config/.hermes/home/.config/wenyan-md/credential.json`
+> - 当前服务器 IP：`171.36.17.27`（已加入白名单）
+
+---
+
+## 安装笔记
+
+### 依赖安装
+
+```bash
+# search 模块：cheerio
+cd /config/.hermes/skills/social-media/wechat-toolkit/scripts/search
+npm install cheerio
+
+# downloader 模块：puppeteer-core
+cd /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader
+npm install
+```
+
+### Chromium 配置
+
+下载模块依赖 puppeteer-core + Chromium。调用前设置环境变量：
+
+```bash
+export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+```
+
+### Node.js
+
+要求 ≥ 18，已验证支持 v22。
+
 ---
 
 ## 模块一览
 
-| 模块 | 功能 | 触发词示例 |
-|------|------|-----------|
-| 🔍 搜索 | 按关键词搜索公众号文章 | "搜XX的公众号文章" |
-| 📰 下载 | 下载文章内容/图片/视频 | "下载这篇公众号文章" |
-| ✍️ 洗稿 | AI去痕迹+原创改写 | "帮我洗稿/改写这篇文章" |
-| 📱 发布 | 发布Markdown到草稿箱 | "发布到公众号" |
+| 模块 | 功能 | 状态 | 触发词示例 |
+|------|------|------|-----------|
+| 🔍 搜索 | 按关键词搜索公众号文章 | ✅ 可用 | "搜XX的公众号文章" |
+| 📰 下载 | 下载文章内容/图片/视频 | ✅ 可用 | "下载这篇公众号文章" |
+| ✍️ 洗稿 | AI去痕迹+原创改写 | ✅ 可用 | "帮我洗稿/改写这篇文章" |
+| 📱 发布 | 发布Markdown到草稿箱 | ✅ 可用 | "发布到公众号" |
 
 ---
 
@@ -53,19 +78,19 @@ npm install -g cheerio
 
 ```bash
 # 基础搜索
-node {baseDir}/scripts/search/search_wechat.js "关键词"
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/search/search_wechat.js "关键词"
 
 # 指定数量
-node {baseDir}/scripts/search/search_wechat.js "关键词" -n 15
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/search/search_wechat.js "关键词" -n 15
 
 # 保存到文件
-node {baseDir}/scripts/search/search_wechat.js "关键词" -n 20 -o result.json
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/search/search_wechat.js "关键词" -n 20 -o result.json
 
 # 解析真实链接
-node {baseDir}/scripts/search/search_wechat.js "关键词" -n 5 -r
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/search/search_wechat.js "关键词" -n 5 -r
 
 # 抓取文章正文（自动启用 -r）
-node {baseDir}/scripts/search/search_wechat.js "关键词" -n 5 -c
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/search/search_wechat.js "关键词" -n 5 -c
 ```
 
 ### 参数说明
@@ -89,17 +114,17 @@ node {baseDir}/scripts/search/search_wechat.js "关键词" -n 5 -c
 ## 首次安装依赖
 
 ```bash
-cd {baseDir}/scripts/downloader && npm install
+cd /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader && npm install
 ```
 
 ## 下载前：确认保存位置
 
 ```bash
 # 查看当前配置
-node {baseDir}/scripts/downloader/download.js --show-config
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/download.js --show-config
 
 # 设置默认下载路径（仅需一次）
-node {baseDir}/scripts/downloader/download.js --set-output ~/Downloads/wechat-articles
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/download.js --set-output ~/Downloads/wechat-articles
 ```
 
 - `"isDefault": true` → 尚未配置，需询问用户
@@ -109,14 +134,14 @@ node {baseDir}/scripts/downloader/download.js --set-output ~/Downloads/wechat-ar
 
 ```bash
 # 使用默认路径
-node {baseDir}/scripts/downloader/download.js "<文章URL>"
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/download.js "<文章URL>"
 
 # 临时指定路径
-node {baseDir}/scripts/downloader/download.js "<文章URL>" --output <临时目录>
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/download.js "<文章URL>" --output <临时目录>
 
 # 跳过图片/视频
-node {baseDir}/scripts/downloader/download.js "<文章URL>" --no-image
-node {baseDir}/scripts/downloader/download.js "<文章URL>" --no-video
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/download.js "<文章URL>" --no-image
+node /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/download.js "<文章URL>" --no-video
 ```
 
 ### 输出结构
@@ -129,7 +154,16 @@ node {baseDir}/scripts/downloader/download.js "<文章URL>" --no-video
 ```
 
 ### 前置要求
-- Node.js ≥ 18、Google Chrome、`npm install`（首次）
+- Node.js ≥ 18（✅ 已验证：v22）
+- Google Chrome / Chromium（✅ 已验证：`/usr/bin/chromium`）
+- `npm install`（首次运行前执行）
+
+### ⚠️ Chromium 环境变量
+
+如遇到 Chrome 路径问题，可设置：
+```bash
+export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+```
 
 ---
 
@@ -151,7 +185,7 @@ node {baseDir}/scripts/downloader/download.js "<文章URL>" --no-video
 2. **分析结构** — 识别文章类型、核心论点、段落层次
 3. **深度改写** — 按以下策略执行改写
 4. **添加 frontmatter** — 补充 title + cover
-5. **发布** — 推送到公众号草稿箱
+5. **保存** — 推送到本地目录
 
 ### 改写策略
 
@@ -236,172 +270,318 @@ node {baseDir}/scripts/downloader/download.js "<文章URL>" --no-video
 
 # 📱 模块四：文章发布
 
-一键发布 Markdown 到微信公众号草稿箱，基于 wenyan-cli。
+> ✅ **状态**：`wenyan-cli` 已安装（v2.0.8），凭证已配置，可正常发布。
 
-## 首次安装
+## 凭证存储位置
 
-```bash
-npm install -g @wenyan-md/cli
-```
+`/config/.hermes/home/.config/wenyan-md/credential.json`
 
-## 配置 API 凭证
+## 配置凭证
 
-确保环境变量已设置（或在 TOOLS.md 中配置）：
-```bash
-export WECHAT_APP_ID=your_wechat_app_id
-export WECHAT_APP_SECRET=your_wechat_app_secret
-```
-
-**重要：** IP 必须在微信公众号后台白名单中！
-
-## Markdown 格式要求
-
-文件顶部**必须**包含完整 frontmatter：
-
-```markdown
----
-title: 文章标题（必填！）
-cover: https://example.com/cover.jpg  # 封面图（必填！）
----
-
-# 正文...
-```
-
-⚠️ `title` 和 `cover` **缺一不可**，否则报错。
-
-**⚠️ 图片路径必须使用绝对路径**，避免 wenyan 路径解析问题。包括 cover 和正文中的所有图片引用：
-```markdown
-cover: /Users/minruiqing/photos/cover.jpg        # ✅ 绝对路径
-cover: ./assets/cover.jpg                         # ❌ 相对路径可能出错
-
-![配图](/Users/minruiqing/photos/image.jpg)       # ✅ 绝对路径
-![配图](./images/photo.jpg)                       # ❌ 相对路径可能出错
-```
-
-## 配图生成
-
-发布前，**主动询问用户是否需要生成配图**：
-
-> 📸 文章准备就绪！需要我帮你生成配图吗？
-> - 封面图（cover，建议 1080×864）
-> - 正文插图（根据段落主题生成）
-> - 不需要，直接发布
-
-**如果用户需要配图：**
-1. 根据文章标题和内容，生成合适的图片描述 prompt
-2. 调用用户提供的**生图 skill**（如 doubao-image、openai-image-gen 等）生成图片
-3. 将生成的图片保存到文章目录，使用**绝对路径**引用
-4. 封面图设置到 frontmatter 的 `cover` 字段
-5. 正文插图在合适位置插入 `![描述](绝对路径)`
-
-**prompt 建议：**
-- 封面图：与标题强相关，简洁有冲击力，适合小尺寸预览
-- 正文插图：与对应段落内容一致，辅助理解
-
-## 发布方式
+### 方式一：交互式设置（推荐）
 
 ```bash
-# 方式 1: 使用 publish.js
-node {baseDir}/scripts/publisher/publish.js /path/to/article.md
-
-# 方式 2: 直接用 wenyan-cli
-wenyan publish -f article.md -t lapis -h solarized-light
-
-# 方式 3: stdin（推荐，解决路径问题）
-# macOS/Linux:
-cat "/path/to/article.md" | WECHAT_APP_ID=xxx WECHAT_APP_SECRET=xxx wenyan publish -t lapis -h solarized-light
-
-# 方式 4: 含视频文章（必须用这个）
-node {baseDir}/scripts/publisher/publish_with_video.js /path/to/article.md
+wenyan credential --set
+# 按提示输入 AppID 和 AppSecret
 ```
+
+### 方式二：通过环境变量
+
+```bash
+# 方式A：直接设置环境变量（当前会话有效）
+export WECHAT_APP_ID=your_app_id
+export WECHAT_APP_SECRET=your_app_secret
+
+# 方式B：写入 .env 文件（持久化）
+echo 'WECHAT_APP_ID=your_app_id' >> ~/.env
+echo 'WECHAT_APP_SECRET=your_app_secret' >> ~/.env
+
+# 运行时指定 env 文件
+wenyan publish -f article.md --env-file ~/.env
+```
+
+### 方式三：通过 --app-id 参数
+
+```bash
+wenyan publish -f article.md --app-id your_app_id
+# 会提示输入 AppSecret
+```
+
+## 发布文章
+
+### 先预览再发布（推荐）
+
+```bash
+# 预览 HTML（不发布，只转换，测试用）
+wenyan render -f /path/to/article.md -t phycat -h solarized-light
+```
+
+### 发布到草稿箱
+
+```bash
+# 标准发布（AIPY 默认使用 phycat 绿色主题）
+wenyan publish -f /path/to/article.md -t phycat -h solarized-light
+
+# 使用其他主题
+wenyan publish -f /path/to/article.md -t lapis -h solarized-light
+```
+
+> ⚠️ **AIPY 发布默认 phycat（绿色主题）** — 不要用 lapis，除非用户明确指定。
+>
+> ⚠️ **先 render 再 publish** — render 只生成 HTML 不发稿，可反复调试样式，确认后再 publish。
+>
+> ⚠️ **摘要设置**：wenyan-cli 无 `--description` 参数。**解法**：在 frontmatter 中使用 `description` 字段，生成规则见下方专节。
+
+## 文内配图插入时机与位置
+
+wenyan-cli 不支持指定位置插入图片，**解法**：在 Markdown 中用 `![描述](本地路径)` 在对应章节位置直接嵌入。
+
+**典型位置分配原则**：
+- 封面图（cover）：frontmatter `cover:` 字段指定
+- 文内图：插入到对应章节的**段落之后、章节标题后的第一段结尾**
+- 文末二维码：正文最后、签名/版权信息之前
+
+**图片尺寸处理**：
+- 文内配图建议宽度：800px（保持比例）
+- 使用 Pillow 缩放：`img.resize((800, int(800*h/w)), LANCZOS).save('output.png')`
+
+## 完整发布流程（飞书文档 → 微信公众号）
+
+**第一步：下载所有素材**
+```bash
+# 飞书文件下载（lark-cli）
+cd /tmp && node_modules/.bin/lark-cli drive +download \
+  --file-token <FILE_TOKEN> --output=./output.png --overwrite
+
+# 安装 lark-cli（如未安装）
+cd /tmp && npm install @larksuite/cli
+```
+
+**第二步：图片预处理**
+```bash
+# 封面图裁剪（2.35:1）
+uv run --with pillow python3 -c "
+from PIL import Image
+img = Image.open('/tmp/cover.png')
+tw, th = 900, 383
+r = img.size[0]/img.size[1]
+tr = tw/th
+if r > tr:
+    new_w = int(img.size[1] * tr)
+    c = img.crop(((img.size[0]-new_w)//2, 0, (img.size[0]+new_w)//2, img.size[1]))
+else:
+    new_h = int(img.size[0] / tr)
+    c = img.crop((0, (img.size[1]-new_h)//2, img.size[0], (img.size[1]+new_h)//2))
+c.resize((tw, th), Image.LANCZOS).save('/tmp/cover-wechat.png', 'PNG')
+"
+
+# 文内图缩放（800px宽）
+uv run --with pillow python3 -c "
+from PIL import Image
+img = Image.open('/tmp/image.png')
+w = min(800, img.size[0])
+r = w / img.size[0]
+img.resize((w, int(img.size[1]*r)), Image.LANCZOS).save('/tmp/image-w800.png', 'PNG')
+"
+```
+
+**第三步：组装 Markdown**
+- frontmatter：`title`（必填）、`cover`（封面图本地路径）、`description`（摘要，发布后手动填入后台）
+- 内容区顶部：一般不放重复大标题（公众号会自动显示标题）
+- 文内配图：用 `![描述](本地路径)` 嵌入
+- 文末：二维码 + 课程推荐语
+
+**第四步：预览 + 发布**
+```bash
+# 先预览
+wenyan render -f /tmp/article.md -t phycat -h solarized-light
+
+# 确认无误后发布
+export WECHAT_APP_ID=$(python3 -c "import json; print(json.load(open('/config/.hermes/home/.config/wenyan-md/credential.json')).get('appId',''))")
+export WECHAT_APP_SECRET=$(python3 -c "import json; print(json.load(open('/config/.hermes/home/.config/wenyan-md/credential.json')).get('appSecret',''))")
+wenyan publish -f /tmp/article.md -t phycat -h solarized-light
+```
+
+**第五步：微信后台确认**
+- 登录 mp.we.weixin.qq.com
+- 内容与标题 → 确认摘要是否需要手动粘贴（wenyan 不传摘要字段）
+- 确认封面图、文内图、二维码显示正确
+- 手动发布
 
 ## 主题选项
 
-**内置主题**：`default`、`lapis`（推荐）、`phycat`、`openclaw`（橘红渐变）
+| 主题 | 说明 |
+|------|------|
+| `default` | 内置默认主题 |
+| `lapis` | 青金石主题（蓝色调，推荐技术文章） |
+| `phycat` | 薄荷绿主题（mint-green，清晰层次分明） |
+| `orangeheart` | 橙色调主题 |
+| `purple` | 紫色调主题 |
+| `rainbow` | 彩色主题 |
+| `maize` | 浅黄主题 |
+| `pie` | sspai风格，现代锐利 |
 
-**代码高亮**：`atom-one-dark`、`dracula`、`github`、`monokai`、`solarized-light`（推荐）、`xcode`
+## 封面图规格与裁剪
 
-```bash
-wenyan publish -f article.md -t lapis -h solarized-light
-wenyan theme -l  # 查看所有主题
-```
+**公众号封面图要求**：
+- 尺寸：900×383 像素（2.35:1 宽屏比例）
+- 格式：PNG/JPG，不超过 5MB
+- 路径：使用本地绝对路径
 
-### 🎨 主题触发词
-
-当用户说以下关键词时，自动使用对应主题：
-
-| 触发词 | 主题 | CSS 文件 |
-|:------|:-----|:---------|
-| `openclaw主题` / `橘红主题` / `红色主题` / `orange` | OpenClaw 橘红渐变 | `{baseDir}/references/openclaw-theme.css` |
-| `aurum主题` / `金色主题` / `gold` | Aurum 金色主题 | `{baseDir}/references/aurum-theme.css` |
-| `蓝色主题` / `lapis` / `blue` | Lapis 青金石 | 内置 |
-| `默认主题` / `default` | 默认 | 内置 |
-
-### 使用示例
-
-用户说：
-- "帮我发布到公众号，用 openclaw 主题" → 使用 `openclaw-theme.css`
-- "用橘色主题发布" → 使用 `openclaw-theme.css`
-
-### 🎨 OpenClaw 主题（橘红渐变）
-
-新增自定义主题，灵感来自 OpenClaw logo 的橘红渐变色系：
+**封面图裁剪脚本**（使用 Pillow）：
 
 ```bash
-# 使用自定义主题（推荐）
-wenyan publish -f article.md -c {baseDir}/references/openclaw-theme.css -h solarized-light
-
-# 或者先安装再使用
-wenyan theme --add --name openclaw --path {baseDir}/references/openclaw-theme.css
-wenyan publish -f article.md -t openclaw -h solarized-light
+uv run --with pillow python3 -c "
+from PIL import Image
+img = Image.open('/path/to/source.png')
+target_w, target_h = 900, 383
+current_ratio = img.size[0]/img.size[1]
+target_ratio = target_w/target_h
+if current_ratio > target_ratio:
+    new_w = int(img.size[1] * target_ratio)
+    left = (img.size[0] - new_w) // 2
+    cropped = img.crop((left, 0, left + new_w, img.size[1]))
+else:
+    new_h = int(img.size[0] / target_ratio)
+    top = (img.size[1] - new_h) // 2
+    cropped = img.crop((0, top, img.size[0], top + new_h))
+cropped = cropped.resize((target_w, target_h), Image.LANCZOS)
+cropped.save('/path/to/cover-wechat.png', 'PNG')
+print(f'Saved: {cropped.size}')
+"
 ```
 
-**主题特点：**
-- 封面：橘红 → 红色 渐变背景
-- 标题：深红色调，带渐变效果
-- 引用块：橙色边框 + 浅橙背景
-- 链接：橘红色，底部有渐变下划线
-- 代码块：浅橙色背景 + 橙色左边框
+## 发布命令环境变量注入
 
-## 视频嵌入（关键）
+从凭证文件读取并注入环境变量（无需手动设置）：
 
-微信视频必须用 iframe + data-mpvid 格式，`publish_with_video.js` 已内置此逻辑。
-
-Markdown 中引用：
-```markdown
-![视频描述](media/video.mp4)   # 自动上传并嵌入
+```bash
+export WECHAT_APP_ID=$(python3 -c "import json; print(json.load(open('/config/.hermes/home/.config/wenyan-md/credential.json')).get('appId',''))")
+export WECHAT_APP_SECRET=$(python3 -c "import json; print(json.load(open('/config/.hermes/home/.config/wenyan-md/credential.json')).get('appSecret',''))")
+wenyan publish -f /path/to/article.md -t lapis -h solarized-light
 ```
 
-## 故障排查
+## 发布成功判断
 
-| 问题 | 解决方法 |
-|------|---------|
-| IP 不在白名单 | `curl ifconfig.me` → 添加到公众号后台 |
-| wenyan 未安装 | `npm install -g @wenyan-md/cli` |
-| 环境变量未设置 | `export WECHAT_APP_ID=xxx` |
-| 缺少 frontmatter | 添加 title + cover |
-| 40001 token 失效 | 用 `publish_with_video.js`（已内置 token 管理） |
+成功输出示例：
+```
+发布成功，Media ID: x8t4d4GktbO7KNjgj7SgKeqzKopmssWUpnoKiTdBpMR2ulZqwk4h6Uh4h1kEeUTD
+```
+
+**注意事项**：
+- wenyan 只发布到**草稿箱**，不直接发布
+- 需登录微信公众号后台确认并手动发布
+- frontmatter 必须包含 `title` 字段（`cover` 字段可选）
+
+## ⚠️ 重要前提
+
+**IP 白名单**：微信公众号后台必须将当前服务器 IP 添加到白名单。
+
+当前服务器 IP：`171.37.44.131`（2026-05-25 实测）
+
+> 💡 **IP 可能变化**：如果发布时报 `invalid ip not in whitelist`，立即用 `curl -s ifconfig.me` 获取当前 IP，更新微信后台白名单。旧 IP `171.36.17.27` 已失效。
+
+添加路径：微信公众号后台 → 设置与开发 → 安全中心 → IP白名单 → 添加当前 IP
+
+> 💡 如需确认当前 IP：`curl -s ifconfig.me` 或 `curl -s api.ipify.org`
+
+---
+
+## 📝 摘要生成规则（AIPY 内容体系）
+
+**核心原则：从读者感兴趣的钩子出发，而非从文章内容概括。**
+
+读者刷到公众号文章时，停留时间只有3秒。摘要的任务是——让人停下来想点进来。
+
+### 好的摘要公式
+
+- **痛点共鸣** + **好奇缺口** + **身份认同**（可选）
+
+### 具体做法
+
+1. 识别文章中最能引起目标读者共鸣的一个痛点或惊讶时刻
+2. 用一句话概括这个" hook "，不超过120字
+3. 避免空泛的"本文介绍了..."、"本课程..."
+4. 优先选择：反常识结论、真实失败经历、能解决什么问题的承诺
+
+### 示例对比
+
+❌ 弱摘要（从内容概括）：
+> "本文介绍了AI编程中提示词工程的重要性..."
+
+✅ 强摘要（从读者钩子出发）：
+> "学Python三个月，背熟了变量和循环，但让AI写代码时还是只会说'帮我写个计算器'——问题出在哪？"
+
+❌ 弱摘要：
+> "第二课不教语法，教你怎么和AI说话..."
+
+✅ 强摘要：
+> "第二课不教Hello World，教你怎么让AI写出你想的代码。一个温度转换程序，三次失败到成功的对比，告诉你提问质量的差距才是关键。"
+
+---
+
+# ⚠️ wenyan publish fetch failed 故障排查
+
+**症状**：`wenyan publish` 报 `fetch failed`，但直接 `curl api.weixin.qq.com` 返回 200 成功。
+
+**根因**：`wenyan-cli v2.0.8` 内部使用 `undici` 的 `setGlobalDispatcher(ProxyAgent)`，无法禁用。清除系统代理环境变量或设置 `--proxy ""` 均**无效**。
+
+**关键发现**：
+- `wenyan publish` 无法绕过（没有 `--proxy` 参数可以禁用 ProxyAgent）
+- `wenyan publish --server http://localhost:3050` 可以路由到本地 server，但 AppID 传不过去
+- Python urllib 直连微信 API 完全正常（token 获取、图片上传均成功）
+
+**解法**：
+
+### 方案A（推荐）：Python 脚本直接调用微信 API
+
+详见：`references/wechat-direct-publish.md`
+
+覆盖：获取 token → 上传图片到永久素材 → 上传临时 thumb → 替换飞书图片 URL → 创建草稿
+
+### 方案B：手动发布
+
+登录 mp.weixin.qq.com → 草稿箱 → 新建草稿。图片已通过方案A上传到微信 CDN，手动粘贴正文即可。
+
+### 方案C：修复 wenyan-cli（未解决）
+
+`unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY` → 仍 fetch failed。ProxyAgent 在 CLI 启动时已初始化，系统代理变量无法清除。
+
+---
+
+**详细诊断记录**：`references/wenyan-proxy-diagnosis.md`
 
 ---
 
 # 完整工作流示例
 
-## 搜索 → 洗稿 → 发布
+## 飞书文档 → 微信公众号发布
+
+详见：`references/feishu-wechat-workflow.md`
+
+覆盖场景：飞书文档 + 飞书文件（封面图）→ 微信公众号草稿箱，含封面图裁剪规格。
+
+## 搜索 → 洗稿 → 保存
 
 ```
-1. 搜索文章：node {baseDir}/scripts/search/search_wechat.js "AI教程" -n 5 -c
+1. 搜索文章：
+   node /config/.hermes/skills/social-media/wechat-toolkit/scripts/search/search_wechat.js "AI教程" -n 5 -c
+
 2. 选择目标文章，执行洗稿改写
-3. 保存为 Markdown（含 frontmatter）
-4. 发布：node {baseDir}/scripts/publisher/publish.js article.md
+
+3. 保存为 Markdown（含 frontmatter）：
+   /config/Desktop/wechat-articles/{标题}/article.md
 ```
 
-## 下载 → 洗稿 → 发布
+## 下载 → 洗稿 → 保存
 
 ```
-1. 下载文章：node {baseDir}/scripts/downloader/download.js "https://mp.weixin.qq.com/s/xxx"
+1. 下载文章：
+   node /config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/download.js "https://mp.weixin.qq.com/s/xxx"
+
 2. 读取下载的 HTML/Markdown，执行洗稿改写
+
 3. 保存为 Markdown（含 frontmatter）
-4. 发布：node {baseDir}/scripts/publisher/publish.js article.md
 ```
 
 ---
@@ -410,4 +590,4 @@ Markdown 中引用：
 
 - 所有工具仅供个人学习使用，请遵守版权法规
 - 搜索功能内置防封禁机制（随机UA、请求延迟），请勿高频使用
-- 配置文件：下载器 `{baseDir}/scripts/downloader/config.json`
+- 配置文件：下载器 `/config/.hermes/skills/social-media/wechat-toolkit/scripts/downloader/config.json`
