@@ -1,37 +1,44 @@
 /**
- * OpenClaw 主题 - 橘红到红色渐变
+ * OpenClaw 主题 v2 — 改进版
+ * 橙红为主色，搭配黑/白/灰点缀，避免"红框套红框"
  * 微信公众号文章样式
  * 适配 WenYan 渲染器的 #wenyan 容器
  */
 
 :root {
-  /* 主色调 - 橘红渐变 */
+  /* 主色调 - 橙红（保留但克制使用） */
   --theme-primary: #FF5722;
   --theme-primary-light: #FF8A65;
-  --theme-primary-dark: #E64A19;
-  --theme-gradient: linear-gradient(135deg, #FF6B35 0%, #D32F2F 100%);
-  
+  --theme-primary-dark: #BF360C;
+
+  /* 中性点缀色（新增） */
+  --neutral-dark: #424242;
+  --neutral-mid: #757575;
+  --neutral-light: #BDBDBD;
+  --neutral-bg: #FAFAFA;
+  --neutral-surface: #F5F5F5;
+
   /* 背景色 */
   --bg-color: #FAFAFA;
-  --bg-code: #FFF3E0;
-  
+  --bg-code: #F5F5F5;
+
   /* 文字颜色 */
   --text-color: #212121;
   --text-secondary: #757575;
   --text-link: #FF5722;
-  
-  /* 标题颜色 */
-  --title-color: #D32F2F;
-  --h1-color: #BF360C;
-  --h2-color: #E64A19;
-  --h3-color: #FF5722;
-  
-  /* 分割线 */
-  --divider-color: #FFAB91;
-  
+
+  /* 标题颜色（改用灰黑） */
+  --title-color: #424242;
+  --h1-color: #424242;
+  --h2-color: #424242;
+  --h3-color: #616161;
+
+  /* 分割线（改用灰色） */
+  --divider-color: #E0E0E0;
+
   /* 代码块 */
-  --code-bg: #FFF3E0;
-  --code-border: #FF8A65;
+  --code-bg: #F5F5F5;
+  --code-border: #757575;
 }
 
 #wenyan {
@@ -39,50 +46,66 @@
   line-height: 1.75;
 }
 
-/* 封面样式 */
+/* ========== 封面样式 ========== */
+/* 封面保留渐变，但方向调整为从橙到深灰棕（更有质感） */
 #wenyan .article-cover,
 #wenyan .cover,
 .cover {
-  background: var(--theme-gradient) !important;
+  background: linear-gradient(135deg, #FF6B35 0%, #5D4037 100%) !important;
 }
 
-/* 标题样式 */
+/* ========== 标题样式 ========== */
+/* h1 用灰黑，不再用红色 */
 #wenyan .article-title,
 #wenyan h1,
 #wenyan h1.title {
-  color: var(--title-color) !important;
+  color: var(--h1-color) !important;
   font-weight: bold;
 }
 
 #wenyan h1::after {
-  background: var(--theme-gradient) !important;
+  background: var(--theme-primary) !important;
 }
 
+/* h2：白色背景 + 红色左边框 */
 #wenyan h2 {
   color: var(--h2-color) !important;
-  border-left: 4px solid var(--theme-primary-dark) !important;
+  border-left: 4px solid #FF5722 !important;
   padding-left: 12px !important;
-  background: linear-gradient(135deg, #FFF3E0, #FFEBEE) !important;
-  padding: 8px 12px !important;
-  border-radius: 4px !important;
+  background: #F5F5F5 !important;
+  padding: 10px 12px !important;
+  border-radius: 0 4px 4px 0 !important;
+  margin: 20px 0 !important;
 }
 
+/* h3：灰黑色，不再用红色渐变 */
 #wenyan h3 {
   color: var(--h3-color) !important;
+  font-weight: 600;
 }
 
-/* 引用块 */
+/* 标题渐变效果改为备用（默认用灰黑色） */
+#wenyan h1,
+#wenyan h2,
+#wenyan h3 {
+  /* 先用灰黑色，渐变作为点缀备用 */
+  color: #424242 !important;
+  -webkit-text-fill-color: initial !important;
+}
+
+/* ========== 引用块 ========== */
+/* 白色背景 + 红色左边框 */
 #wenyan blockquote,
 blockquote {
-  border-left: 4px solid var(--theme-primary) !important;
-  background: #FFF3E0 !important;
-  color: #5D4037 !important;
+  border-left: 4px solid #FF5722 !important;
+  background: #FFFFFF !important;
+  color: #424242 !important;
   padding: 12px 16px !important;
-  margin: 12px 0 !important;
+  margin: 16px 0 !important;
   border-radius: 0 4px 4px 0 !important;
 }
 
-/* 链接 */
+/* ========== 链接 ========== */
 #wenyan a,
 a {
   color: var(--text-link) !important;
@@ -92,11 +115,11 @@ a {
 
 #wenyan a:hover,
 a:hover {
-  background: linear-gradient(to right, #FFF3E0, #FFEBEE) !important;
+  background: #FFF3E0 !important;
   border-bottom: 2px solid var(--theme-primary) !important;
 }
 
-/* 分割线 */
+/* ========== 分割线 ========== */
 #wenyan hr,
 hr {
   border-color: var(--divider-color) !important;
@@ -105,37 +128,42 @@ hr {
   margin: 24px 0 !important;
 }
 
-/* 代码块 */
+/* ========== 代码块 ========== */
+/* 冷灰背景 + 深灰左边框，不再是暖橙底+红边 */
 #wenyan pre,
 pre {
   background: var(--code-bg) !important;
-  border-left: 3px solid var(--theme-primary) !important;
+  border-left: 3px solid #757575 !important;
   padding: 12px 16px !important;
   border-radius: 4px !important;
   overflow-x: auto !important;
+  border: none !important;
+  border-left: 3px solid #757575 !important;
 }
 
 #wenyan code,
 code {
   background: var(--code-bg) !important;
-  color: var(--theme-primary-dark) !important;
+  color: #424242 !important;
   padding: 2px 6px !important;
   border-radius: 3px !important;
   font-family: 'SF Mono', Monaco, 'Courier New', monospace !important;
   font-size: 13px !important;
 }
 
-/* 强调文字 */
+/* ========== 强调文字 ========== */
+/* strong 用灰黑，不再用深红 */
 #wenyan strong,
 #wenyan b,
 strong {
-  color: var(--theme-primary-dark) !important;
+  color: #424242 !important;
   font-weight: bold !important;
 }
 
-/* 列表标记 */
+/* ========== 列表标记 ========== */
+/* 标记改用灰色，不再用红色 */
 #wenyan ul li::before {
-  background: var(--theme-primary) !important;
+  background: #9E9E9E !important;
 }
 
 #wenyan ul li {
@@ -148,7 +176,7 @@ strong {
   content: "•" !important;
   position: absolute !important;
   left: 0 !important;
-  color: var(--theme-primary) !important;
+  color: #9E9E9E !important;
   font-size: 18px !important;
   line-height: 1.5 !important;
 }
@@ -163,11 +191,12 @@ strong {
   content: none !important;
 }
 
-/* 表格 */
+/* ========== 表格 ========== */
+/* 表头用深灰背景 + 白色文字，不再是红渐变 */
 #wenyan table th,
 table th {
-  background: var(--theme-gradient) !important;
-  color: white !important;
+  background: #424242 !important;
+  color: #FFFFFF !important;
   font-weight: bold !important;
   padding: 10px 12px !important;
   text-align: left !important;
@@ -176,22 +205,29 @@ table th {
 #wenyan table td,
 table td {
   padding: 8px 12px !important;
-  border-bottom: 1px solid #FFCCBC !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+  color: #424242 !important;
 }
 
 #wenyan table tr:nth-child(even) {
-  background: #FFEBEE !important;
+  background: #FAFAFA !important;
 }
 
-/* 页脚 */
+#wenyan table {
+  border: 1px solid #E0E0E0 !important;
+  border-collapse: collapse !important;
+}
+
+/* ========== 页脚 ========== */
+/* 页脚用灰黑线条，不再用红色 */
 #wenyan .article-footer,
 .article-footer {
-  border-top: 2px solid var(--theme-primary) !important;
+  border-top: 2px solid #424242 !important;
   padding-top: 16px !important;
   margin-top: 32px !important;
 }
 
-/* 图片 */
+/* ========== 图片 ========== */
 #wenyan img,
 img {
   max-width: 100% !important;
@@ -200,31 +236,28 @@ img {
   margin: 12px 0 !important;
 }
 
-/* 段落间距 */
+/* ========== 段落间距 ========== */
 #wenyan p {
   margin: 12px 0 !important;
   line-height: 1.8 !important;
+  color: #212121 !important;
 }
 
-/* 微信公众号样式覆盖 */
+/* ========== 微信公众号样式覆盖 ========== */
 #wenyan {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif !important;
 }
 
-/* 标题渐变效果 */
-#wenyan h1, 
-#wenyan h2, 
+/* ========== 备用：如果需要渐变标题（默认关闭） ========== */
+/* 如需启用渐变标题效果，取消以下注释并配合 h1/h2/h3 的 color 注释化 */
+/*
+#wenyan h1,
+#wenyan h2,
 #wenyan h3 {
   background: -webkit-linear-gradient(135deg, #FF6B35, #D32F2F);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-/* 备用方案：如果渐变不生效 */
-#wenyan h1,
-#wenyan h2,
-#wenyan h3 {
   color: #BF360C !important;
-  -webkit-text-fill-color: initial !important;
 }
+*/
